@@ -1,0 +1,179 @@
+{
+  "iamApi/register": {
+    "requestMethod": "POST",
+    "dataType": "json",
+    "scenarios": [
+      {
+        "description": "Successful registration",
+        "trigger": {
+          "paramName": "username",
+          "paramValue": "success@a.com"
+        },
+        "response": {
+          "status": 200,
+          "responseData": {
+            "refreshToken": "abc"
+          }
+        }
+      },
+      {
+        "description": "Legacy registration error 0 response",
+        "trigger": {
+          "paramName": "username",
+          "paramValue": "fail0@a.com"
+        },
+        "response": {
+          "status": 400,
+          "responseData": {
+            "error": 0
+          }
+        }
+      },
+      {
+        "description": "Invalid username",
+        "trigger": {
+          "paramName": "username",
+          "paramValue": "fail1@a.com"
+        },
+        "response": {
+          "status": 400,
+          "responseData": {
+            "errorCode": 1
+          }
+        }
+      },
+      {
+        "description": "Password fails requirements",
+        "trigger": {
+          "paramName": "username",
+          "paramValue": "fail2@a.com"
+        },
+        "response": {
+          "status": 400,
+          "responseData": {
+            "errorCode": 2
+          }
+        }
+      },
+      {
+        "description": "Invalid registration request body",
+        "trigger": {
+          "paramName": "username",
+          "paramValue": "fail3@a.com"
+        },
+        "response": {
+          "status": 400,
+          "responseData": {
+            "errorCode": 3
+          }
+        }
+      },
+      {
+        "description": "Incorrect password",
+        "trigger": {
+          "paramName": "username",
+          "paramValue": "fail4@a.com"
+        },
+        "response": {
+          "status": 400,
+          "responseData": {
+            "errorCode": 4
+          }
+        }
+      },
+      {
+        "description": "Account already registered",
+        "trigger": {
+          "paramName": "username",
+          "paramValue": "fail5@a.com"
+        },
+        "response": {
+          "status": 400,
+          "responseData": {
+            "errorCode": 5
+          }
+        }
+      }
+    ]
+  },
+  "iamApi/login": {
+    "requestMethod": "POST",
+    "dataType": "formdata",
+    "scenarios": [
+      {
+        "description": "Playwright account accepts correct password",
+        "trigger": {
+          "params": {
+            "username": "playwright@a.com",
+            "password": "Playwright123!"
+          }
+        },
+        "response": {
+          "status": 200,
+          "responseData": {
+            "refreshToken": "playwright-test-token"
+          }
+        }
+      },
+      {
+        "description": "Playwright account rejects incorrect password",
+        "trigger": {
+          "paramName": "username",
+          "paramValue": "playwright@a.com"
+        },
+        "response": {
+          "status": 401,
+          "responseData": {}
+        }
+      },
+      {
+        "description": "Successful login",
+        "trigger": {
+          "paramName": "username",
+          "paramValue": "success@a.com"
+        },
+        "response": {
+          "status": 200,
+          "responseData": {
+            "refreshToken": "abc"
+          }
+        }
+      },
+      {
+        "description": "Login returns blank refresh token",
+        "trigger": {
+          "paramName": "username",
+          "paramValue": "blankRefreshToken@a.com"
+        },
+        "response": {
+          "status": 200,
+          "responseData": {
+            "refreshToken": "  "
+          }
+        }
+      },
+      {
+        "description": "Login response omits refresh token",
+        "trigger": {
+          "paramName": "username",
+          "paramValue": "noRefreshToken@a.com"
+        },
+        "response": {
+          "status": 200,
+          "responseData": {}
+        }
+      },
+      {
+        "description": "Login credentials are unauthorized",
+        "trigger": {
+          "paramName": "username",
+          "paramValue": "unauthorized@a.com"
+        },
+        "response": {
+          "status": 401,
+          "responseData": {}
+        }
+      }
+    ]
+  }
+}
