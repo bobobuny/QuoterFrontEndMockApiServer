@@ -72,6 +72,22 @@ test('rejects an incorrect password for the Playwright account', async (t) => {
   assert.equal(response.status, 401);
 });
 
+test('returns the configured forbidden response for the Playwright access-denied scenario', async (t) => {
+  const baseUrl = await startTestServer(t);
+  const response = await postLogin(baseUrl, 'forbidden@a.com', 'any-password');
+
+  assert.equal(response.status, 403);
+  assert.deepEqual(await response.json(), { errorCode: 0 });
+});
+
+test('returns the configured server error for the Playwright server-error scenario', async (t) => {
+  const baseUrl = await startTestServer(t);
+  const response = await postLogin(baseUrl, 'serverError@a.com', 'any-password');
+
+  assert.equal(response.status, 500);
+  assert.deepEqual(await response.json(), { errorCode: 1 });
+});
+
 test('preserves existing username-only login scenarios', async (t) => {
   const baseUrl = await startTestServer(t);
   const response = await postLogin(baseUrl, 'success@a.com', 'any-password');
