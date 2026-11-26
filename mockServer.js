@@ -11,7 +11,10 @@ function loadMockData() {
 
 function createApp(mockData = loadMockData(), logger = console) {
   const app = express();
-  app.use(cors());
+  app.use(cors({
+    origin: ['http://127.0.0.1:4200', 'http://localhost:4200'],
+    credentials: true,
+  }));
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -61,6 +64,22 @@ function createApp(mockData = loadMockData(), logger = console) {
         ? Object.keys(scenario.trigger.params).join(', ')
         : `${scenario.trigger.paramName}=${scenario.trigger.paramValue}`;
       logger.log(`✅ Scenario matched: ${matchedParams}`);
+      if (scenario.response.accessToken) {
+        const { name, value, clear, ...configuredOptions } = scenario.response.accessToken;
+        const cookieOptions = {
+          httpOnly: true,
+          secure: true,
+          sameSite: 'none',
+          path: '/',
+          ...configuredOptions,
+        };
+
+        if (clear) {
+          res.clearCookie(name, cookieOptions);
+        } else {
+          res.cookie(name, value, cookieOptions);
+        }
+      }
       res.status(scenario.response.status).json(scenario.response.responseData);
     } else {
       logger.log('❌ No matching scenario');

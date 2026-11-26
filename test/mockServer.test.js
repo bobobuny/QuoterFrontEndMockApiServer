@@ -28,6 +28,41 @@ test('accepts the Playwright account only with its matching password', async (t)
 
   assert.equal(response.status, 200);
   assert.deepEqual(await response.json(), { refreshToken: 'playwright-test-token' });
+  const accessTokenCookie = response.headers.get('set-cookie');
+  assert.match(accessTokenCookie, /^accessToken=playwright-test-access-token;/);
+  assert.match(accessTokenCookie, /HttpOnly/i);
+  assert.match(accessTokenCookie, /Secure/i);
+  assert.match(accessTokenCookie, /SameSite=None/i);
+});
+
+test('expires the access token cookie when logging out', async (t) => {
+  const baseUrl = await startTestServer(t);
+  const response = await fetch(`${baseUrl}/iamApi/logout`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: '{}',
+  });
+
+  assert.equal(response.status, 200);
+  const accessTokenCookie = response.headers.get('set-cookie');
+  assert.match(accessTokenCookie, /^accessToken=;/);
+  assert.match(accessTokenCookie, /Expires=Thu, 01 Jan 1970/i);
+  assert.match(accessTokenCookie, /HttpOnly/i);
+  assert.match(accessTokenCookie, /Secure/i);
+});
+
+test('allows credentialed requests from the local Angular origin', async (t) => {
+  const baseUrl = await startTestServer(t);
+  const response = await fetch(`${baseUrl}/iamApi/login`, {
+    method: 'OPTIONS',
+    headers: {
+      Origin: 'http://127.0.0.1:4200',
+      'Access-Control-Request-Method': 'POST',
+    },
+  });
+
+  assert.equal(response.headers.get('access-control-allow-origin'), 'http://127.0.0.1:4200');
+  assert.equal(response.headers.get('access-control-allow-credentials'), 'true');
 });
 
 test('rejects an incorrect password for the Playwright account', async (t) => {

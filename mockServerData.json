@@ -112,6 +112,11 @@
           "status": 200,
           "responseData": {
             "refreshToken": "playwright-test-token"
+          },
+          "accessToken": {
+            "name": "accessToken",
+            "value": "playwright-test-access-token",
+            "maxAge": 330000
           }
         }
       },
@@ -172,6 +177,26 @@
         "response": {
           "status": 401,
           "responseData": {}
+        }
+      }
+    ]
+  },
+  "iamApi/logout": {
+    "requestMethod": "POST",
+    "dataType": "json",
+    "scenarios": [
+      {
+        "description": "Clears the access token cookie on logout",
+        "trigger": {
+          "params": {}
+        },
+        "response": {
+          "status": 200,
+          "responseData": {},
+          "accessToken": {
+            "name": "accessToken",
+            "clear": true
+          }
         }
       }
     ]
